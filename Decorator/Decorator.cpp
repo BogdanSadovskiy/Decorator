@@ -77,7 +77,6 @@ public:
         int iterator = str.size();
         int i = 0;
         string str_ = "+";
-        str.resize(iterator * 3);
         for (i = 0; i != iterator; i++) {
             str_.push_back('-');
         }
