@@ -98,7 +98,7 @@ int main()
     cout << "Input message:\n";
     string str; 
     getline(cin, str);
-    TXTMessageEdited*  defaultMessage = new TXTMessageEdited(str);
+    TXTMessageEdited* defaultMessage = new TXTMessageEdited(str);
     TXTMessageEdited* Uppercase = new TXTMessageEdited(defaultMessage);
 
     UppercaseDecorator().operation(Uppercase);
@@ -121,6 +121,10 @@ int main()
     cout << NonNUmber->getMessage() << endl << endl;
     cout << Framed->getSetting() << endl;
     cout << Framed->getMessage() << endl;
+
+    delete defaultMessage;
+    delete NonNUmber;
+    delete Framed;
 
  }
 
