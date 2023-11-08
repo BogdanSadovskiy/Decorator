@@ -25,16 +25,6 @@ public:
     }
 };
 
-//class TXTMessageEdited : public MESSAGE{
-//public:
-//    TXTMessageEdited(string str) {
-//        this->txt = str;
-//    }
-//    TXTMessageEdited(TXTMessageEdited* tmp) {
-//        this->txt = tmp->getMessage();
-//        this->setting = tmp->getSetting();
-//    }
-//};
 
 class Decorator {
 protected:
