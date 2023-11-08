@@ -4,9 +4,13 @@ using namespace std;
 class MESSAGE {
 protected:
     string txt;
-    string setting = "Default";
+    string setting;
 public:
     MESSAGE() { txt = ""; }
+    MESSAGE(string txt) {
+        this->txt = txt;
+        this->setting = "Defailt";
+    }
     void setMessage(string txt) {
         this->txt = txt;
     }
@@ -21,42 +25,63 @@ public:
     }
 };
 
-class TXTMessageEdited : public MESSAGE{
-public:
-    TXTMessageEdited(string str) {
-        this->txt = str;
-    }
-    TXTMessageEdited(TXTMessageEdited* tmp) {
-        this->txt = tmp->getMessage();
-        this->setting = tmp->getSetting();
-    }
-};
+//class TXTMessageEdited : public MESSAGE{
+//public:
+//    TXTMessageEdited(string str) {
+//        this->txt = str;
+//    }
+//    TXTMessageEdited(TXTMessageEdited* tmp) {
+//        this->txt = tmp->getMessage();
+//        this->setting = tmp->getSetting();
+//    }
+//};
 
 class Decorator {
 protected:
-    virtual void operation(TXTMessageEdited*& tmp) = 0{}
+    string txt;
+    string setting;
+    virtual void operation() {};
+public:
+    Decorator(MESSAGE*& message) {
+        this->txt = message->getMessage();
+        this->setting = message->getSetting();
+    };
+    Decorator(Decorator* decorator) {
+        this->txt = decorator->txt;
+        this->setting = decorator->setting;
+    };
+    string getMessage() { return txt; }
+    string getSetting() { return setting; }
 };
 
 class UppercaseDecorator: public Decorator {
-public:
-    void operation(TXTMessageEdited*& tmp) override {
-       
-        string str = tmp->getMessage();
+private:
+    void operation() override {
+
+        string str = this->txt;
         for (int i = 0; str[i] != '\0'; i++) {
             if ((int)str[i] > 96 && (int)str[i] < 123) {
                 str[i] = (int)str[i] - 32;
             }
         }
-        tmp->setMessage(str);
-        tmp->setSetting("EDITED BY UPPERCASING");
+        this->txt = str;
+        this->setting = "EDITED BY UPPERCASING";
+    }
+public:
+
+    UppercaseDecorator(MESSAGE*& message) : Decorator(message){
+        operation();
+    }
+    UppercaseDecorator(Decorator* decorator) : Decorator(decorator) {
+        operation();
     }
 };
 
 class NONNumberDecorator : public Decorator {
-public:
-    void operation(TXTMessageEdited*& tmp) override {
-       
-        string str = tmp->getMessage();
+private:
+    void operation() override {
+
+        string str = this->txt;
         string str_;
         for (int i = 0; str[i] != '\0'; i++) {
             if ((int)str[i] > 47 && (int)str[i] < 58) {
@@ -64,16 +89,24 @@ public:
             }
             str_.push_back(str[i]);
         }
-        tmp->setMessage(str_);
-        tmp->setSetting("EDITED BY DELETING NUMBERS");
+        this->txt = str_;
+        this->setting = "EDITED BY DELETING NUMBERS";
+    }
+public:
+    NONNumberDecorator(MESSAGE*& message) : Decorator(message) {
+        operation();
+    }
+
+    NONNumberDecorator(Decorator* decorator) : Decorator(decorator) {
+        operation();
     }
 };
 
 class FrameDEcorator : public Decorator {
-public:
-    void operation(TXTMessageEdited*& tmp) override {
-      
-        string str = tmp->getMessage();                         
+private:
+    void operation() override {
+
+        string str = this->txt;
         int iterator = str.size();
         int i = 0;
         string str_ = "+";
@@ -81,17 +114,24 @@ public:
         for (i = 0; i != iterator; i++) {
             str_.push_back('-');
         }
-        str_+= "+\n|"; 
+        str_ += "+\n|";
         for (int ii = 0; str[ii] != '\0'; ii++) {
             str_.push_back(str[ii]);
         }
         str_ += "|\n+";
         for (int i = 0; i != iterator; i++) {
-            str_.push_back ( '-');
+            str_.push_back('-');
         }
-        str_+= "+";
-        tmp->setMessage(str_);
-        tmp->setSetting("EDITED BY FRAMING");
+        str_ += "+";
+        this->txt = str_;
+        this->setting = "EDITED BY FRAMING";
+    }
+public:
+    FrameDEcorator(MESSAGE*& message) : Decorator(message) {
+        operation();
+    }
+    FrameDEcorator(Decorator* decorator) : Decorator(decorator) {
+        operation();
     }
 };
 int main()
@@ -99,29 +139,22 @@ int main()
     cout << "Input message:\n";
     string str; 
     getline(cin, str);
-    TXTMessageEdited*  defaultMessage = new TXTMessageEdited(str);
-    TXTMessageEdited* Uppercase = new TXTMessageEdited(defaultMessage);
-
-    UppercaseDecorator().operation(Uppercase);
-
-    TXTMessageEdited* NonNUmber = new TXTMessageEdited(defaultMessage);
-    NONNumberDecorator().operation(NonNUmber);
-
-    TXTMessageEdited* Framed = new TXTMessageEdited(defaultMessage);
-    FrameDEcorator().operation(Framed);
+    MESSAGE*  defaultMessage = new MESSAGE(str);
+    Decorator* Uppercase = new UppercaseDecorator(defaultMessage);
+    Decorator* NonNumbers = new NONNumberDecorator(Uppercase);
+    Decorator* Frame = new FrameDEcorator(NonNumbers);
 
     system("cls");
+    cout << "Message:\n";
+    cout << defaultMessage->getMessage() << endl << endl;
 
-    cout << defaultMessage->getSetting()<<endl;
-    cout << defaultMessage->getMessage()<<endl<<endl;
-
-    cout << Uppercase->getSetting() << endl;
+    cout << Uppercase->getSetting()<< endl;
     cout << Uppercase->getMessage() << endl << endl;
 
-    cout << NonNUmber->getSetting() << endl;
-    cout << NonNUmber->getMessage() << endl << endl;
-    cout << Framed->getSetting() << endl;
-    cout << Framed->getMessage() << endl;
+    cout << NonNumbers->getSetting() << endl;
+    cout << NonNumbers->getMessage() << endl << endl;
 
+    cout << Frame->getSetting() << endl;
+    cout << Frame->getMessage() << endl << endl;
  }
 
